@@ -1,0 +1,168 @@
+@charset "UTF-8";
+/*!
+ * Marp / Marpit TDConf theme.
+ *
+ * @theme tdconf
+ * @auto-scaling true
+ * @author Smirnov Viacheslav
+ */
+
+ @import url("https://fonts.googleapis.com/css?family=Roboto:400,700");
+ @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+ @import url("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/github.min.css");
+ 
+@font-face{
+    font-family: "TTTravels-DemiBold";
+    src: url("themes/font/TTTravels-DemiBold.ttf") format("truetype");
+}
+@font-face{
+    font-family: "TTTravels-Regular";
+    src: url("themes/font/TTTravels-Regular.ttf") format("truetype");
+}
+:root {
+    --bg-color: #000000;
+    --text-color: #fff;
+
+    --tag: #6e9fff;
+
+    --tdconf: #FFD02F;
+    --tdconf_half: #05003880;
+
+    --error: #301010;
+}
+
+section {
+    background-color: var(--bg-color) ;
+    background-image: url("themes/img/Logo_TDC_white.svg");
+    background-position: 95% 95%, 0% bottom;
+    background-repeat: no-repeat,  no-repeat;
+    background-size: 20%,  100%;
+    background-origin: padding-box,  border-box; 
+    color: var(--text-color) !important;
+    font-family: 'TTTravels-Regular';
+    padding: 0;
+    padding-left: 2%;
+    font-size: 190%;
+    text-shadow: 0px 0px 5px var(--bg-color);
+ }
+
+ section.invert {
+    background-color: var(--text-color) ;
+    background-image: url("themes/img/Logo_TDC.svg"), url("themes/img/TestDriven_footer.png");
+    color: var(--bg-color) !important;
+    text-shadow: 0px 0px 5px var(--text-color);
+ }
+
+ section.error {
+    background-color: var(--error) ;
+    background-image: url("themes/img/Logo_TDC.svg"), url("themes/img/TestDriven_footer.png");
+    color: var(--text-color) !important;
+    text-shadow: 0px 0px 5px var(--bg-color);
+ }
+
+
+ footer {
+    box-sizing: border-box;
+    font-size: 66%;
+    height: 60px;
+    line-height: 50px;
+    overflow: hidden;
+    padding: 10px 25px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+ section.lead {
+    background-image: url("themes/img/lead/miro.svg"), url("themes/img/Logo_TDC_white.svg"); 
+    background-position: 95% 80%, 95% 97%;
+    background-repeat: no-repeat,  no-repeat;
+    background-size: 20%,  20%;
+    background-origin: padding-box,  padding-box;
+    color: var(--text-color) !important;
+    text-decoration-color: var(--text-color)  !important;
+}
+
+section h1, section h2, section h3 {
+    font-size: 140%;
+    margin-left: 0% !important;
+    margin-right: 0% !important;
+}
+section h1 {
+    font-family: 'TTTravels-DemiBold';
+}
+section h3 {
+    color: var(--tdconf);
+}
+
+section.lead h1, section.lead h2, section.lead h3,
+section.title h1, section.title h2, section.title h3 {
+    font-size: 250%;
+    margin: 0 !important;
+    z-index: 3;
+    position: absolute;
+    width: 70%;
+    text-shadow: 1px 1px 5px #000000;
+}
+section.lead h1, section.title h1 {
+    top: 50%;
+}
+section.lead h2, section.title h2 {
+    top: 70%;
+}
+section.lead h3, section.title h3 {
+    top: 85%;
+}
+
+section.title h1 {
+    width: 50%;
+}
+section.title h2 {
+    width: 80%;
+}
+
+section code {
+    font-family: 'JetBrains Mono', monospace;
+}
+section > p > code
+{
+    word-wrap: anywhere;
+}
+section pre, section > code, section > pre, section > p {
+    margin: 30px;
+}
+
+strong {
+    color: var(--tdconf);
+}
+
+li::marker {
+    color: var(--tdconf_half);
+}
+
+section.invert strong {
+    color: var(--bg-color);
+    text-shadow: 1px 2px 3px var(--tdconf_half);
+    font-family: 'TTTravels-DemiBold';
+}
+
+section.main h1 {
+    font-size: 350%;
+    position: absolute;
+    text-align: center;
+    top: 5%;
+    width: 93%;
+}
+
+.hljs-tag, .hljs-name {
+    color: var(--tag);
+}
+
+.hljs-string, .hljs-number, .hljs-keyword {
+    color: var(--tdconf);
+}
+
+.hljs-number, .hljs-keyword {
+    font-weight: bold;
+}
