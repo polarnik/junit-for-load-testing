@@ -37,7 +37,7 @@ _paginate: false
 ---
 <!-- _class: main -->
 
-# Применение __JUnit__ для нагрузки + параметризации и отладки тестов 
+# Применим __JUnit__ для профессиональной отладки тестов 
 
 ---
 
@@ -60,7 +60,8 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 
 1. 🔬 __Gatling__ и его отладка c __@Test__ 
 1. 🔬 __JMeter-Java-DSL__ и его отладка c __@Test__ 
-1. 📊 __BUILD_ID__ и его генерация при отладке
+1. 📊 __Start__/__Stop__-time и их фиксация при отладке
+1. 📊 __TestId__/__RunId__/__*Id__ и его генерация при отладке
 1. ⚙️ __@ParameterizedTest__ или параметры как код
 1. ⚙️ __@RepeatedTest__ для тестов масштабируемости
 1. ⚙️ __@Execution(ExecutionMode.CONCURRENT)__ для многопоточности
@@ -326,6 +327,127 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 
 ---
 
+# Отладка для __jmeter-java-dsl__ (by desing)
+
+```java
+    public class ZeroTest {
+        @Test public void zero() throws IOException {
+            TestPlanStats stats = testPlan(
+                threadGroup(1, 1,
+                    jsr223Sampler("zero", v -> {
+                        v.log.info("Hello World!");
+                    })
+                )
+            ).run();
+            assertThat(stats.overall().sampleTimePercentile99())
+                .isLessThan(Duration.ofSeconds(5));
+        }
+    }
+```
+
+---
+
+# Ставим точку останова 🔴 и запускаем отладку 🪲
+
+```java
+    public class ZeroTest {
+🪲      @Test public void zero() throws IOException {
+🔴          TestPlanStats stats = testPlan(
+🔴              threadGroup(1, 1,
+🔴                  jsr223Sampler("zero", v -> {
+                        v.log.info("Hello World!");
+🔴                  })
+🔴              )
+🔴          ).run();
+🔴          assertThat(stats.overall().sampleTimePercentile99())
+🔴              .isLessThan(Duration.ofSeconds(5));
+        }
+    }
+```
+
+---
+
+# __Lambda-выражения__ отлаживать нельзя 💔
+
+```java
+    public class ZeroTest {
+🪲      @Test public void zero() throws IOException {
+            TestPlanStats stats = testPlan(
+                threadGroup(1, 1,
+                    jsr223Sampler("zero", v -> {
+💔                      v.log.info("Hello World!");
+                    })
+                )
+            ).run();
+            assertThat(stats.overall().sampleTimePercentile99())
+                .isLessThan(Duration.ofSeconds(5));
+        }
+    }
+```
+
+---
+# Но можно создать вспомогательные классы 😎
+### Создать в них конструкторы и ссылки на все нужное
+```java
+public class AbstractScenario {
+    public AbstractScenario AbstractScenario(
+        DslJsr223Sampler.SamplerVars v) {
+        this.samplerVars = v;
+        return this.setLog(v.log)
+                   .setCtx(v.ctx)
+                   .setVars(v.vars)
+                   .setProps(v.props)
+                   .setSampleResult(v.sampleResult);
+    }
+    ... 
+}
+```
+
+---
+# И писать методы классов 
+```java
+    public class SomeScenario extends AbstractScenario {
+        int errorCount = 0;
+        public boolean helloWorld() {
+            this.log.info("Hello World!");
+        }
+    }
+```
+
+---
+# __Легко отлаживаемые__ методы классов 
+
+```java
+    public class SomeScenario extends AbstractScenario {
+        int errorCount = 0;
+        public boolean helloWorld() {
+🔴          this.log.info("Hello World!");
+        }
+    }
+```
+
+---
+# Которые вызывать в __lambda-выражениях__
+
+```java
+    public class SomeScenario extends AbstractScenario {
+        int errorCount = 0;
+        public boolean helloWorld() {
+🔴          this.log.info("Hello World!");
+⬆️      }
+⬆️  }
+    public class ZeroTest {
+🪲      @Test public void zero() throws IOException {
+            TestPlanStats stats = testPlan(
+⬆️              threadGroup(1, 1,
+⬆️                  jsr223Sampler("zero", v -> {
+⬆️  ⬅️  ⬅️  ⬅️  ⬅️      new SomeScenario(v).helloWorld();
+                    }))).run();
+        }   
+    }
+```
+---
+
 <!-- _class: main -->
 
 # __JUnit__ удобен для отладки, запуска, ... __JMeter Java-DSL__
@@ -334,24 +456,128 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 
 <!-- _class: main -->
 
-# __BUILD_ID__ для сравнения отчетов
+# __TestId__/__RunId__/__*Id__ или __Start__+__StopTime__ для сравнения тестов
 
 ---
+# __4.__ 📊 __Start__/__Stop__-time и их фиксация при отладке
+
+- __Grafana__ и сравнение метрик из __Prometheus__, __Victoria__, __InfluxDB__
+
+- __Jenkins__ и фиксация моментов старта и завершения теста
+
+- __JUnit__ для фиксации __Start__/__Stop__-time при отладке
+
+---
+
+# __Grafana__ и сравнение метрик __Prometheus__, __InfluxDB__, ...
 
 ![bg](img/compare.png)
 
 ---
-# __4.__ 📊 __BUILD_ID__ и его генерация при отладке
+
+# __Grafana__ и сравнение метрик __Prometheus__, __InfluxDB__, ...
+
+```java
+1. Отобразить таблицу по первому тесту:
+  - "Start" и "Stop" - формат unixTimeStamp, тип "tag"/"label"
+2. При клике по строке первой таблицы сохраняем в URL: 
+  - from="Start", to="Stop", Start1="Start"
+3. Отобразить таблицу по второму тесту
+  - "Start" и "Stop" - формат unixTimeStamp, тип "tag"/"label"
+  - "Start1" - дополнительная колонка из переменной "Start1"
+  - "Offset" - вычисляемая колонка "Start1"-"Start"
+4. При клике по строке второй таблицы сохраняем в URL: 
+  - "Offset"="Offset"
+5. Отобразить метрики по первому и второму тестам
+  - по первому просто от "from" до "to"
+  - по второму со смещением "Offset"
+```
+
+---
+
+# Самое главное: __Start__ и __Stop__, тип __tag__/__label__
+
+```java
+1. Отобразить таблицу по первому тесту:
+  - "Start" и "Stop", тип "tag"/"label", формат unixTimeStamp
+2. При клике по строке первой таблицы сохраняем в URL: 
+  - from=Start, to=Stop, Start1=Start
+3. Отобразить таблицу по второму тесту
+  - "Start" и "Stop", тип "tag"/"label", формат unixTimeStamp
+  - Start1 - дополнительная колонка из переменной Start1
+  - Offset - вычисляемая колонка Start1-Start
+4. При клике по строке второй таблицы сохраняем в URL: 
+  - Offset=Offset
+5. Отобразить метрики по первому и второму тестам
+  - по первому просто от from до to
+  - по второму со смещением Offset
+```
+
+---
+
+<!-- _class: main -->
+
+# Как сохранить __Start__/__Stop__-time для каождого запуска теста?
+
+---
+
+# __Jenkins__ и фиксация моментов старта и завершения
+
+## До теста: сохранить __Start__ и расчётный __Stop__-time
+- как __tag__/__label__
+
+## Тест: ab, curl+bash, k6, jmeter, locust, gatling, junit, ...
+- любой тест!
+
+## После теста: сохранить __Start__ и __Stop__-time фактические
+ - как __tag__/__label__ 
+
+---
+
+# __Jenkins__ и фиксация моментов старта и завершения
+
+## До теста: сохранить __Start__ и расчётный __Stop__-time
+- как __tag__/__label__ в формате unixTimeStamp для UTC
+
+## Тест: ab, curl+bash, k6, jmeter, locust, gatling, junit, ...
+- любой тест, без метрик, распределенный, нестабильный, ...
+
+## После теста: сохранить __Start__ и __Stop__-time фактические
+ - как __tag__/__label__ в формате unixTimeStamp для UTC
+ - +value __Duration__ или любое другое
+ - +tag/label для __ServerVersion__, __Environment__, __PipelineName__, __Scenario__
+
+---
+# Пример записи метрик в формате __InfluxLine__ в __VM__
+
+```python
+metricTime = 1640980800 # Fri Dec 31 2021 20:00:00 GMT+0000
+reqBody = f'testStats,' \
+        f'suite={row["suite"]},' \
+        f'environment={row["env"]},' \
+        f'version={row["version"]},' \
+        f'start={row["startUnix"]},' \
+        f'stop={row["stopUnix"]} ' \
+        f'duration={row["duration"]} {metricTime}000000000'
+
+http.post(
+    url="http://victoriaMetrics:8428/write",
+    data=reqBody
+)
+```
+
+---
+# __5.__ 📊 __TestId__/__RunId__/__*Id__ и его генерация при отладке
 
 - __Jenkins__ и результаты отдельного теста
-
-- __Grafana__ и сравнение отчетов
 
 - __JMeter__ и простановка __BUILD_ID__ в результатах теста
 
 - __Gatling__ и простановка __BUILD_ID__ в результатах теста
 
-- Автоматизация запуска тестов
+- __InfluxDB__ или __Prometheus__ для аггрегации результатов теста
+
+- __JUnit__ для генерации __TestId__/__RunId__/__*Id__ при отладке
 
 ---
 
@@ -359,7 +585,7 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 
 <!-- _class: main -->
 
-# __JUnit__ удобен для эмуляции __BUILD_ID__, даже при локальной отладке без __Jenkins__
+# __JUnit__ удобен для эмуляции __TestId__/__RunId__/__*Id__ при  отладке без __CI__
 
 
 ---
@@ -370,7 +596,7 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 
 ---
 
-# __5.__ ⚙️ __@ParameterizedTest__ или параметры как код
+# __6.__ ⚙️ __@ParameterizedTest__ или параметры как код
 
 ---
 
@@ -380,11 +606,11 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 
 ---
 
-# __6.__ ⚙️ __@RepeatedTest__ для тестов масштабируемости
+# __7.__ ⚙️ __@RepeatedTest__ для тестов масштабируемости
 
 ---
 
-# __7.__ ⚙️ __@Execution(ExecutionMode.CONCURRENT)__
+# __8.__ ⚙️ __@Execution(ExecutionMode.CONCURRENT)__
 
 ---
 
@@ -418,11 +644,12 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 1. ⁉️ Чем __JUnit__ полезен нагрузочнику
 1. 🔬 __Gatling__ и его отладка c __@Test__ 
 1. 🔬 __JMeter-Java-DSL__ и его отладка c __@Test__ 
-1. 📊 __BUILD_ID__ и его генерация при отладке
+1. 📊 __Start__/__Stop__-time и их фиксация при отладке
+1. 📊 __TestId__/__RunId__/__*Id__ и его генерация при отладке
 1. ⚙️ __@ParameterizedTest__ или параметры как код
 1. ⚙️ __@RepeatedTest__ для тестов масштабируемости
 1. ⚙️ __@Execution(ExecutionMode.CONCURRENT)__ для многопоточности
 
 ## Смирнов Вячеслав | ![h:35](themes/img/lead/miro.svg) Miro, ![h:35](themes/img/lead/Telegram_logo.svg) qa_load, ![h:35](themes/img/lead/Telegram_logo.svg) smirnovqa
 
-### Repo: `github.com/polarnik/junit-for-load-testing`
+### 🔗 `polarnik.github.io/junit-for-load-testing/`

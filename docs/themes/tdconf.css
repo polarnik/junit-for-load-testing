@@ -76,9 +76,9 @@ section {
 
  section.lead {
     background-image: url("themes/img/lead/miro.svg"), url("themes/img/Logo_TDC_white.svg"); 
-    background-position: 95% 80%, 95% 97%;
+    background-position: 93% 80%, 95% 95%;
     background-repeat: no-repeat,  no-repeat;
-    background-size: 20%,  20%;
+    background-size: 18%,  20%;
     background-origin: padding-box,  padding-box;
     color: var(--text-color) !important;
     text-decoration-color: var(--text-color)  !important;
