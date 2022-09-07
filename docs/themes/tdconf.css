@@ -75,14 +75,16 @@ section {
 }
 
  section.lead {
-    background-image: url("themes/img/lead/miro.svg"), url("themes/img/Logo_TDC_white.svg"); 
-    background-position: 93% 80%, 95% 95%;
-    background-repeat: no-repeat,  no-repeat;
-    background-size: 18%,  20%;
-    background-origin: padding-box,  padding-box;
+    background-image: url("themes/img/lead/miro.svg"), url("themes/img/Logo_TDC_white.svg") , url("themes/img/vladstudio_flow_6_3456x2234.jpg"); 
+    background-position: 93% 70%, 95% 95%, 0% bottom;
+    background-repeat: no-repeat, no-repeat,  no-repeat;
+    background-size: 18%,  20%, 100%;
+    background-origin: padding-box, padding-box,  padding-box;
     color: var(--text-color) !important;
     text-decoration-color: var(--text-color)  !important;
+
 }
+
 
 section h1, section h2, section h3 {
     font-size: 140%;
@@ -106,13 +108,13 @@ section.title h1, section.title h2, section.title h3 {
     text-shadow: 1px 1px 5px #000000;
 }
 section.lead h1, section.title h1 {
-    top: 50%;
+    top: 45%;
 }
 section.lead h2, section.title h2 {
-    top: 70%;
+    top: 60%;
 }
 section.lead h3, section.title h3 {
-    top: 85%;
+    top: 75%;
 }
 
 section.title h1 {
@@ -154,6 +156,14 @@ section.main h1 {
     top: 5%;
     width: 93%;
 }
+
+section.main {
+    background-image: url("themes/img/Logo_TDC_white.svg") , url("themes/img/vladstudio_flow_6_3456x2234.jpg");
+    background-position: 95% 95%, left top;
+    background-repeat: no-repeat,  no-repeat;
+    background-size: 20%,  100%;
+}
+
 
 .hljs-tag, .hljs-name {
     color: var(--tag);

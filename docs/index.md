@@ -19,8 +19,9 @@ _paginate: false
 ### ![h:55](themes/img/lead/miro.svg) Miro 
 
 <!--
+_footer: Image by Vlad Gerasimov on <a href="https://vlad.studio/">vlad.studio</a>
+ -->
 
--->
 
 ---
 <!-- _class: title -->
@@ -38,6 +39,10 @@ _paginate: false
 <!-- _class: main -->
 
 # Применим __JUnit__ для профессиональной отладки тестов 
+
+<!--
+_footer: Image by Vlad Gerasimov on <a href="https://vlad.studio/">vlad.studio</a>
+ -->
 
 ---
 
@@ -89,24 +94,34 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 
 ![bg cover](img/miro.png)
 
+- тесты, как код  — __JMeter-java-dsl__, __Gatling__
+
+- тестовые данные, как код — __@Parametrized__
+- параметры отладки, как код — __@Test__, __@IntelliJ IDEA__, __JUnit Plugin__
+- библиотеки и версии, как код  — __Maven__, __Laconic POM for Maven__
+- презентация по __JUnit__, как код — __Visual Studio Code__, __Marp.App Extension__
+
 ---
 
 # Отладка
 
 ![bg height:75%](img/infra.team.png)
 
+## Сокращение времени на реализацию сложных тестов
+## Тестирование сложных и новых систем
+## Рост сложности задач
+### Рост зарплаты
+
 ---
 
 # Параметризация
 
-![bg height:75%](img/infra.tools.png)
 
 ---
 
 # Простые тесты без метрик
 
-![bg 70%](img/trend.png)
-
+## Подача нагрузки Unit-тестами
 
 ---
 
@@ -123,9 +138,6 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 - Отладка для __gatling-java-dsl__
 
 - Отладка для __gatling-scala-dsl__
-
-
-
 
 ---
 
@@ -147,8 +159,8 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
         }
     }
 ```
-
 ---
+
 
 # __HashMap__ с настройками и метод запуска симуляции
 
@@ -622,7 +634,7 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 # Начни свой день с кофе
 
 
-![bg](img/nolan-issac-It0DCaCBr40-unsplash.jpg)
+![bg opacity:0.5](img/nolan-issac-It0DCaCBr40-unsplash.jpg)
 
 
 ---
@@ -653,3 +665,7 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 ## Смирнов Вячеслав | ![h:35](themes/img/lead/miro.svg) Miro, ![h:35](themes/img/lead/Telegram_logo.svg) qa_load, ![h:35](themes/img/lead/Telegram_logo.svg) smirnovqa
 
 ### 🔗 `polarnik.github.io/junit-for-load-testing/`
+
+
+---
+
