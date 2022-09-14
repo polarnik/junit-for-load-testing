@@ -110,24 +110,15 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 ## Сокращение времени на реализацию сложных тестов
 ## Тестирование сложных и новых систем
 ## Рост сложности задач
-### Рост зарплаты
-
----
-
-# Параметризация
-
-
----
-
-# Простые тесты без метрик
-
-## Подача нагрузки Unit-тестами
+### Карьерный рост
 
 ---
 
 <!-- _class: main -->
 
 # __«Всё как код»__ и отладка
+
+
 
 
 
@@ -485,29 +476,14 @@ public class AbstractScenario {
 
 ![bg](img/compare.png)
 
+<!--
+_footer: `Слайды: https://polarnik.github.io/grafana-comparator/`
+-->
+
 ---
 
 # __Grafana__ и сравнение метрик __Prometheus__, __InfluxDB__, ...
 
-```java
-1. Отобразить таблицу по первому тесту:
-  - "Start" и "Stop" - формат unixTimeStamp, тип "tag"/"label"
-2. При клике по строке первой таблицы сохраняем в URL: 
-  - from="Start", to="Stop", Start1="Start"
-3. Отобразить таблицу по второму тесту
-  - "Start" и "Stop" - формат unixTimeStamp, тип "tag"/"label"
-  - "Start1" - дополнительная колонка из переменной "Start1"
-  - "Offset" - вычисляемая колонка "Start1"-"Start"
-4. При клике по строке второй таблицы сохраняем в URL: 
-  - "Offset"="Offset"
-5. Отобразить метрики по первому и второму тестам
-  - по первому просто от "from" до "to"
-  - по второму со смещением "Offset"
-```
-
----
-
-# Самое главное: __Start__ и __Stop__, тип __tag__/__label__
 
 ```java
 1. Отобразить таблицу по первому тесту:
@@ -536,28 +512,14 @@ public class AbstractScenario {
 # __Jenkins__ и фиксация моментов старта и завершения
 
 ## До теста: сохранить __Start__ и расчётный __Stop__-time
-- как __tag__/__label__
+- как __tag__/__label__ + дополнительные теги
 
 ## Тест: ab, curl+bash, k6, jmeter, locust, gatling, junit, ...
 - любой тест!
 
 ## После теста: сохранить __Start__ и __Stop__-time фактические
- - как __tag__/__label__ 
+ - как __tag__/__label__ + дополнительные теги
 
----
-
-# __Jenkins__ и фиксация моментов старта и завершения
-
-## До теста: сохранить __Start__ и расчётный __Stop__-time
-- как __tag__/__label__ в формате unixTimeStamp для UTC
-
-## Тест: ab, curl+bash, k6, jmeter, locust, gatling, junit, ...
-- любой тест, без метрик, распределенный, нестабильный, ...
-
-## После теста: сохранить __Start__ и __Stop__-time фактические
- - как __tag__/__label__ в формате unixTimeStamp для UTC
- - +value __Duration__ или любое другое
- - +tag/label для __ServerVersion__, __Environment__, __PipelineName__, __Scenario__
 
 ---
 # Пример записи метрик в формате __InfluxLine__ в __VM__
@@ -579,21 +541,98 @@ http.post(
 ```
 
 ---
+
+# __@BeforeAll__, __@AfterAll__ из __JUnit__ 5
+# __@BeforeClass__, __@AfterClass__ из __JUnit__ 4
+
+```java
+@BeforeClass
+public static void storeStartStopTimeBeforeTest() throws IOException {
+    var suite = "debug-max-perf";
+    var version = "1.111111";
+    long startUnix = Instant.now().getEpochSecond();
+    long duration = 60 * 60 * 1000; // 1 hour
+    long stopUnix = startUnix + duration;
+    var metricTime = "1640980800" + "000000000";
+    var reqBody = String.format("testStats," +
+            "suite=%s,environment=%s,version=%s," +
+            "start=%d,stop=%d duration=%d %s",
+            suite, env, version, startUnix, stopUnix, duration, metricTime);
+    // ... send
+}
+```
+
+---
+
+# Можно не сохранять __duration__
+
+```java
+    // testStats_duration:
+    var reqBody = String.format("testStats," +
+            "suite=%s,environment=%s,version=%s," +
+            "start=%d,stop=%d duration=%d %s",
+            suite, env, version, startUnix, stopUnix, duration, metricTime);
+
+    // testStats_stop:
+    var reqBody = String.format("testStats," +
+            "suite=%s,environment=%s,version=%s," +
+            "start=%d stop=%d %s",
+            suite, env, version, startUnix, stopUnix, metricTime);
+```
+
+# Главное -- сохранить __start__ и __stop__
+---
+
+
+
+<!-- _class: main -->
+
+# __JUnit__ удобен для фиксации __Start__/__Stop__-time при  отладке без __CI__
+
+
+---
 # __5.__ 📊 __TestId__/__RunId__/__*Id__ и его генерация при отладке
 
-- __Jenkins__ и результаты отдельного теста
-
-- __JMeter__ и простановка __BUILD_ID__ в результатах теста
-
-- __Gatling__ и простановка __BUILD_ID__ в результатах теста
-
 - __InfluxDB__ или __Prometheus__ для аггрегации результатов теста
+
+- __Jenkins__ и результаты отдельного теста
 
 - __JUnit__ для генерации __TestId__/__RunId__/__*Id__ при отладке
 
 ---
 
+# Хочется аггрегировать метрики по тесту
 
+![bg fit](img/stats.png)
+
+---
+
+# Удобный ключ группировки -- __BUILD_ID__ 
+
+![bg fit](img/BUILD_ID.jpg)
+
+<!-- _footer: `https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#working-with-your-jenkinsfile`
+-->
+
+---
+# Имитация __BUILD_ID__ для тестов с __@BeforeEach__
+```java
+String BUILD_ID;
+@BeforeEach public void beforeEach()
+{
+    BUILD_ID = Instant.now().toString().replace(":", "-");
+}
+@Test public void test() throws IOException {
+    TestPlanStats stats = testPlan(
+        threadGroup(1, 1, jsr223Sampler("test", v -> {
+                v.log.info("Hello World!"); })
+        ),
+        influxDbListener("http://influxdb:8086/write?db=jmeter")
+            .tag("BUILD_ID", BUILD_ID),
+    ).run();
+}
+```
+---
 
 <!-- _class: main -->
 
@@ -608,7 +647,66 @@ http.post(
 
 ---
 
+# Проводил серию тестов с разным ростом нагрузки
+
+![bg fit](img/params.png)
+
+---
+
 # __6.__ ⚙️ __@ParameterizedTest__ или параметры как код
+
+```java
+    @ParameterizedTest
+    @CsvSource({
+            "slow,   100, 10",
+            "medium, 100,  5",
+            "fast,   100,  2",
+            "ultra,  100,  1",
+            "wow,    100,  0"
+    })
+    public void loadTest(String testName,
+                         int threads,
+                         int rampDurationMinutes)
+            throws IOException, InterruptedException, TimeoutException {
+        ...
+    }
+```
+
+---
+
+# Ступени сложны в анализе, требуют инженера
+
+![bg fit](img/steps.png)
+
+---
+
+# Тесты-ступени просты в анализе
+
+![bg fit](img/separate.tests.png)
+
+---
+
+# Assertion на каждую ступень можно задать кодом
+```java
+    @ParameterizedTest
+    @CsvSource({
+            "100",
+            "200",
+            "300",
+            "400",    
+    })
+    public void loadTest(int threads) {
+        TestPlanStats stats = testPlan( ... ).run();
+
+        assertThat(stats.overall().sampleTimePercentile99()).
+            isLessThan(Duration.ofSeconds(30));
+    }
+```
+---
+
+<!-- _class: main -->
+
+# __JUnit__ удобен для простых в анализе тестов с параметрами
 
 ---
 
@@ -620,11 +718,72 @@ http.post(
 
 # __7.__ ⚙️ __@RepeatedTest__ для тестов масштабируемости
 
+```java
+@Execution(ExecutionMode.SAME_THREAD)
+public class ALotOfLiteMember {
+    static LinkedBlockingQueue<HazelcastInstance> queueHazelcast = 
+        new LinkedBlockingQueue<>();
+    static LinkedBlockingQueue<Integer> queueStop = 
+        new LinkedBlockingQueue<>();
+
+    @RepeatedTest(40) public void ConnectToHazelcast() 
+        throws InterruptedException {
+        var config = new LiteMemberConfigBuilder().buildConfig();
+        var hazelcastInstance = Hazelcast.newHazelcastInstance(config);
+        queueHazelcast.put(hazelcastInstance);
+        queueStop.poll(30, TimeUnit.SECONDS);
+    }
+}
+```
+
+---
+
+# __40__ итераций с паузами по __30__ секунд между ними
+
+```java
+@Execution(ExecutionMode.SAME_THREAD)
+public class ALotOfLiteMember {
+    static LinkedBlockingQueue<HazelcastInstance> queueHazelcast = 
+        new LinkedBlockingQueue<>();
+    static LinkedBlockingQueue<Integer> queueStop = 
+        new LinkedBlockingQueue<>();
+
+➡️  @RepeatedTest(40) public void ConnectToHazelcast() 
+        throws InterruptedException {
+        var config = new LiteMemberConfigBuilder().buildConfig();
+        var hazelcastInstance = Hazelcast.newHazelcastInstance(config);
+        queueHazelcast.put(hazelcastInstance);
+➡️      queueStop.poll(30, TimeUnit.SECONDS);
+    }
+}
+```
+
 ---
 
 # __8.__ ⚙️ __@Execution(ExecutionMode.CONCURRENT)__
 
+```java
+@Execution(ExecutionMode.CONCURRENT)
+public class ClusterBench {
+    static Cluster cluster = new ClusterImpl();
+
+    @RepeatedTest(30)
+    public void getOptionalParam() throws InterruptedException {
+        int loop = 10000 * 2;
+        for (int i = 0; i < loop; i++) {
+            cluster.getOptionalParam(i);
+}   }   }
+```
+## Можно тестировать в несколько потоков
+
 ---
+
+<!-- _class: main -->
+
+# __JUnit__ удобен для простых тестов с итерациями и паузами
+
+---
+
 
 <!-- _class: main
 _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Nolan Issac</a> on <a href="https://unsplash.com/s/photos/coffee?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
@@ -665,7 +824,4 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 ## Смирнов Вячеслав | ![h:35](themes/img/lead/miro.svg) Miro, ![h:35](themes/img/lead/Telegram_logo.svg) qa_load, ![h:35](themes/img/lead/Telegram_logo.svg) smirnovqa
 
 ### 🔗 `polarnik.github.io/junit-for-load-testing/`
-
-
----
 

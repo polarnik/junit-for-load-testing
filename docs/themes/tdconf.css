@@ -176,3 +176,7 @@ section.main {
 .hljs-number, .hljs-keyword {
     font-weight: bold;
 }
+
+.hljs-section, .hljs-selector-id, .hljs-title {
+    color: #fe7167;
+}
