@@ -738,7 +738,7 @@ _footer: `Слайды: https://polarnik.github.io/grafana-comparator/`
             var config = new ConfigBuilder().buildConfig();
             var hazelcastInstance = 
                 Hazelcast.newHazelcastInstance(config);
-            queueHazelcast.put(hazelcastInstance);
+            queueHz.put(hazelcastInstance);
             queueStop.poll(30, TimeUnit.SECONDS);
         }
     }
@@ -765,7 +765,7 @@ _footer: `Слайды: https://polarnik.github.io/grafana-comparator/`
             var config = new ConfigBuilder().buildConfig();
             var hazelcastInstance = 
                 Hazelcast.newHazelcastInstance(config);    
-            queueHazelcast.put(hazelcastInstance);
+            queueHz.put(hazelcastInstance);
 ```
 ```javs
 ➡️          queueStop.poll(30, TimeUnit.SECONDS);

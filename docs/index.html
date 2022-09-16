@@ -614,7 +614,7 @@
             <span class="hljs-keyword">var</span> config = <span class="hljs-keyword">new</span> ConfigBuilder().buildConfig();
             <span class="hljs-keyword">var</span> hazelcastInstance = 
                 Hazelcast.newHazelcastInstance(config);
-            queueHazelcast.put(hazelcastInstance);
+            queueHz.put(hazelcastInstance);
             queueStop.poll(<span class="hljs-number">30</span>, TimeUnit.SECONDS);
         }
     }
@@ -635,7 +635,7 @@
             <span class="hljs-keyword">var</span> config = new ConfigBuilder().buildConfig();
             <span class="hljs-keyword">var</span> hazelcastInstance = 
                 Hazelcast.newHazelcastInstance(config);    
-            queueHazelcast.put(hazelcastInstance);
+            queueHz.put(hazelcastInstance);
 </span></span></foreignObject></svg></code></pre>
 <pre><code class="language-javs"><svg data-marp-fitting="svg" data-marp-fitting-code><foreignObject><span data-marp-fitting-svg-content><span data-marp-fitting-svg-content-wrap><img class="emoji" draggable="false" alt="➡" src="https://twemoji.maxcdn.com/v/14.0.2/svg/27a1.svg" data-marp-twemoji=""/>          queueStop.poll(30, TimeUnit.SECONDS);
         }
