@@ -180,3 +180,11 @@ section.main {
 .hljs-section, .hljs-selector-id, .hljs-title {
     color: #fe7167;
 }
+
+pre {
+    margin: 0%;
+}
+
+pre code.language-kotlin span {
+    opacity: 0.5 !important;
+}

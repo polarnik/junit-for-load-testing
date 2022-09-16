@@ -150,47 +150,56 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
         }
     }
 ```
+
 ---
 
 
 # __HashMap__ с настройками и метод запуска симуляции
 
+```kotlin
+    import io.gatling.app.Gatling;
+    import org.testng.annotations.Test;
+    import scala.collection.mutable.HashMap;
+    public class DebugTest {
+```
 ```java
-//  import io.gatling.app.Gatling;
-//  import org.testng.annotations.Test;
-//  import scala.collection.mutable.HashMap;
-//  public class DebugTest {
         var config = new HashMap<String, String>();
         void runSimulation(String simulationClass) {
             config.put("gatling.core.simulationClass", 
                 simulationClass);
             Gatling.fromMap(config);
         }
-//      @Test void debugMaxPerfSimulation() {
-//          runSimulation("simulation.MaxPerf");
-//      }
-//  }
+```
+```kotlin
+        @Test void debugMaxPerfSimulation() {
+            runSimulation("simulation.MaxPerf");
+        }
+    }
 ```
 
 ---
 
 # __@Test__, запускающий симуляцию
 
+```kotlin
+    import io.gatling.app.Gatling;
+    import org.testng.annotations.Test;
+    import scala.collection.mutable.HashMap;
+    public class DebugTest {
+        var config = new HashMap<String, String>();
+        void runSimulation(String simulationClass) {
+            config.put("gatling.core.simulationClass", 
+                simulationClass);
+            Gatling.fromMap(config);
+        }
+```
 ```java
-//  import io.gatling.app.Gatling;
-//  import org.testng.annotations.Test;
-//  import scala.collection.mutable.HashMap;
-//  public class DebugTest {
-//      var config = new HashMap<String, String>();
-//      void runSimulation(String simulationClass) {
-//          config.put("gatling.core.simulationClass", 
-//              simulationClass);
-//          Gatling.fromMap(config);
-//      }
         @Test void debugMaxPerfSimulation() {
             runSimulation("simulation.MaxPerf");
         }
-//  }
+```
+```kotlin
+    }
 ```
 
 ---
@@ -219,17 +228,17 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 # Запускаем разные симуляции через __@Test__
 
 ```java
-@Test void maxPerfSimulation() {
-    runSimulation("simulation.MaxPerf");
-}
+    @Test void maxPerfSimulation() {
+        runSimulation("simulation.MaxPerf");
+    }
 
-@Test void stableSimulation() {
-    runSimulation("simulation.Stable");
-}
+    @Test void stableSimulation() {
+        runSimulation("simulation.Stable");
+    }
 
-@Test void onceOnlySimulation() {
-    runSimulation("simulation.OnceOnly");
-}
+    @Test void onceOnlySimulation() {
+        runSimulation("simulation.OnceOnly");
+    }
 ```
 
 ---
@@ -237,16 +246,16 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 # Генерируем html-отчеты через __@Test__
 
 ```java
-@Test void generateReport() {
-    HashMap<String, String> configLocal = new HashMap<>();
-    {
-        configLocal.put("gatling.charting.maxPlotPerSeries", 
-          "600");
-        configLocal.put("gatling.core.directory.reportsOnly", 
-          "gatling/maxperfsimulation-20220321094726824");
+    @Test void generateReport() {
+        HashMap<String, String> configLocal = new HashMap<>();
+        {
+            configLocal.put("gatling.charting.maxPlotPerSeries", 
+            "600");
+            configLocal.put("gatling.core.directory.reportsOnly", 
+            "gatling/maxperfsimulation-20220321094726824");
+        }
+        Gatling.fromMap(configLocal);
     }
-    Gatling.fromMap(configLocal);
-}
 ```
 
 
@@ -392,18 +401,18 @@ _footer: Photo by <a href="https://unsplash.com/es/@nolanissac?utm_source=unspla
 # Но можно создать вспомогательные классы 😎
 ### Создать в них конструкторы и ссылки на все нужное
 ```java
-public class AbstractScenario {
-    public AbstractScenario AbstractScenario(
-        DslJsr223Sampler.SamplerVars v) {
-        this.samplerVars = v;
-        return this.setLog(v.log)
-                   .setCtx(v.ctx)
-                   .setVars(v.vars)
-                   .setProps(v.props)
-                   .setSampleResult(v.sampleResult);
+    public class AbstractScenario {
+        public AbstractScenario AbstractScenario(
+            DslJsr223Sampler.SamplerVars v) {
+            this.samplerVars = v;
+            return this.setLog(v.log)
+                    .setCtx(v.ctx)
+                    .setVars(v.vars)
+                    .setProps(v.props)
+                    .setSampleResult(v.sampleResult);
+        }
+        ... 
     }
-    ... 
-}
 ```
 
 ---
@@ -525,19 +534,19 @@ _footer: `Слайды: https://polarnik.github.io/grafana-comparator/`
 # Пример записи метрик в формате __InfluxLine__ в __VM__
 
 ```python
-metricTime = 1640980800 # Fri Dec 31 2021 20:00:00 GMT+0000
-reqBody = f'testStats,' \
-        f'suite={row["suite"]},' \
-        f'environment={row["env"]},' \
-        f'version={row["version"]},' \
-        f'start={row["startUnix"]},' \
-        f'stop={row["stopUnix"]} ' \
-        f'duration={row["duration"]} {metricTime}000000000'
+    metricTime = 1640980800 # Fri Dec 31 2021 20:00:00 GMT+0000
+    reqBody = f'testStats,' \
+            f'suite={row["suite"]},' \
+            f'environment={row["env"]},' \
+            f'version={row["version"]},' \
+            f'start={row["startUnix"]},' \
+            f'stop={row["stopUnix"]} ' \
+            f'duration={row["duration"]} {metricTime}000000000'
 
-http.post(
-    url="http://victoriaMetrics:8428/write",
-    data=reqBody
-)
+    http.post(
+        url="http://victoriaMetrics:8428/write",
+        data=reqBody
+    )
 ```
 
 ---
@@ -546,20 +555,19 @@ http.post(
 # __@BeforeClass__, __@AfterClass__ из __JUnit__ 4
 
 ```java
-@BeforeClass
-public static void storeStartStopTimeBeforeTest() throws IOException {
-    var suite = "debug-max-perf";
-    var version = "1.111111";
-    long startUnix = Instant.now().getEpochSecond();
-    long duration = 60 * 60 * 1000; // 1 hour
-    long stopUnix = startUnix + duration;
-    var metricTime = "1640980800" + "000000000";
-    var reqBody = String.format("testStats," +
-            "suite=%s,environment=%s,version=%s," +
-            "start=%d,stop=%d duration=%d %s",
-            suite, env, version, startUnix, stopUnix, duration, metricTime);
-    // ... send
-}
+    @BeforeClass public static void storeStartStopTimeBeforeTest()      {
+        var suite = "debug-max-perf";
+        var version = "1.111111";
+        long start = Instant.now().getEpochSecond();
+        long duration = 60 * 60 * 1000; // 1 hour
+        long stop = start + duration;
+        var metricTime = "1640980800" + "000000000";
+        var reqBody = String.format("testStats," +
+                "suite=%s,environment=%s,version=%s," +
+                "start=%d,stop=%d duration=%d %s",
+                suite, env, version, start, stop, 
+                duration, metricTime); ...
+    }
 ```
 
 ---
@@ -617,20 +625,20 @@ public static void storeStartStopTimeBeforeTest() throws IOException {
 ---
 # Имитация __BUILD_ID__ для тестов с __@BeforeEach__
 ```java
-String BUILD_ID;
-@BeforeEach public void beforeEach()
-{
-    BUILD_ID = Instant.now().toString().replace(":", "-");
-}
-@Test public void test() throws IOException {
-    TestPlanStats stats = testPlan(
-        threadGroup(1, 1, jsr223Sampler("test", v -> {
-                v.log.info("Hello World!"); })
-        ),
-        influxDbListener("http://influxdb:8086/write?db=jmeter")
-            .tag("BUILD_ID", BUILD_ID),
-    ).run();
-}
+    static String BUILD_ID;
+    @BeforeEach public void beforeEach()
+    {
+        BUILD_ID = Instant.now().toString().replace(":", "-");
+    }
+    @Test public void test() throws IOException {
+        TestPlanStats stats = testPlan(
+            threadGroup(1, 1, jsr223Sampler("test", v -> {
+                    v.log.info("Hello World!"); })
+            ),
+            influxDbListener("http://influxdb:8086/write?db=jmeter")    
+                .tag("BUILD_ID", BUILD_ID),
+        ).run();
+    }
 ```
 ---
 
@@ -667,7 +675,7 @@ String BUILD_ID;
     public void loadTest(String testName,
                          int threads,
                          int rampDurationMinutes)
-            throws IOException, InterruptedException, TimeoutException {
+        throws IOException, InterruptedException, TimeoutException {    
         ...
     }
 ```
@@ -719,43 +727,52 @@ String BUILD_ID;
 # __7.__ ⚙️ __@RepeatedTest__ для тестов масштабируемости
 
 ```java
-@Execution(ExecutionMode.SAME_THREAD)
-public class ALotOfLiteMember {
-    static LinkedBlockingQueue<HazelcastInstance> queueHazelcast = 
-        new LinkedBlockingQueue<>();
-    static LinkedBlockingQueue<Integer> queueStop = 
-        new LinkedBlockingQueue<>();
-
-    @RepeatedTest(40) public void ConnectToHazelcast() 
-        throws InterruptedException {
-        var config = new LiteMemberConfigBuilder().buildConfig();
-        var hazelcastInstance = Hazelcast.newHazelcastInstance(config);
-        queueHazelcast.put(hazelcastInstance);
-        queueStop.poll(30, TimeUnit.SECONDS);
+    @Execution(ExecutionMode.SAME_THREAD)
+    public class ALotOfLiteMember {
+        static LinkedBlockingQueue<HazelcastInstance> queueHazelcast = 
+            new LinkedBlockingQueue<>();
+        static LinkedBlockingQueue<Integer> queueStop = 
+            new LinkedBlockingQueue<>();
+        @RepeatedTest(40) public void ConnectToHazelcast() 
+            throws InterruptedException {
+            var config = new LiteMemberConfigBuilder().buildConfig();
+            var hazelcastInstance = 
+                Hazelcast.newHazelcastInstance(config);
+            queueHazelcast.put(hazelcastInstance);
+            queueStop.poll(30, TimeUnit.SECONDS);
+        }
     }
-}
 ```
 
 ---
 
 # __40__ итераций с паузами по __30__ секунд между ними
 
-```java
-@Execution(ExecutionMode.SAME_THREAD)
-public class ALotOfLiteMember {
-    static LinkedBlockingQueue<HazelcastInstance> queueHazelcast = 
-        new LinkedBlockingQueue<>();
-    static LinkedBlockingQueue<Integer> queueStop = 
-        new LinkedBlockingQueue<>();
 
-➡️  @RepeatedTest(40) public void ConnectToHazelcast() 
-        throws InterruptedException {
-        var config = new LiteMemberConfigBuilder().buildConfig();
-        var hazelcastInstance = Hazelcast.newHazelcastInstance(config);
-        queueHazelcast.put(hazelcastInstance);
-➡️      queueStop.poll(30, TimeUnit.SECONDS);
+```kotlin
+    @Execution(ExecutionMode.SAME_THREAD)
+    public class ALotOfLiteMember {
+        static LinkedBlockingQueue<HazelcastInstance> queueHazelcast = 
+            new LinkedBlockingQueue<>();
+```
+```java
+        static LinkedBlockingQueue<Integer> queueStop = 
+            new LinkedBlockingQueue<>();
+➡️      @RepeatedTest(40) public void ConnectToHazelcast() 
+```
+```kotlin
+            throws InterruptedException {
+            var config = new LiteMemberConfigBuilder().buildConfig();
+            var hazelcastInstance = 
+                Hazelcast.newHazelcastInstance(config);    
+            queueHazelcast.put(hazelcastInstance);
+```
+```javs
+➡️          queueStop.poll(30, TimeUnit.SECONDS);
+        }
+```
+```kotlin
     }
-}
 ```
 
 ---
@@ -763,16 +780,16 @@ public class ALotOfLiteMember {
 # __8.__ ⚙️ __@Execution(ExecutionMode.CONCURRENT)__
 
 ```java
-@Execution(ExecutionMode.CONCURRENT)
-public class ClusterBench {
-    static Cluster cluster = new ClusterImpl();
+    @Execution(ExecutionMode.CONCURRENT)
+    public class ClusterBench {
+        static Cluster cluster = new ClusterImpl();
 
-    @RepeatedTest(30)
-    public void getOptionalParam() throws InterruptedException {
-        int loop = 10000 * 2;
-        for (int i = 0; i < loop; i++) {
-            cluster.getOptionalParam(i);
-}   }   }
+        @RepeatedTest(30)
+        public void getOptionalParam() {
+            int loop = 10000 * 2;
+            for (int i = 0; i < loop; i++) {
+                cluster.getOptionalParam(i);
+    }   }   }
 ```
 ## Можно тестировать в несколько потоков
 
