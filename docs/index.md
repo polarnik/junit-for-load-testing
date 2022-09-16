@@ -729,13 +729,13 @@ _footer: `Слайды: https://polarnik.github.io/grafana-comparator/`
 ```java
     @Execution(ExecutionMode.SAME_THREAD)
     public class ALotOfLiteMember {
-        static LinkedBlockingQueue<HazelcastInstance> queueHazelcast = 
+        static LinkedBlockingQueue<HazelcastInstance> queueHz = 
             new LinkedBlockingQueue<>();
         static LinkedBlockingQueue<Integer> queueStop = 
             new LinkedBlockingQueue<>();
         @RepeatedTest(40) public void ConnectToHazelcast() 
             throws InterruptedException {
-            var config = new LiteMemberConfigBuilder().buildConfig();
+            var config = new ConfigBuilder().buildConfig();
             var hazelcastInstance = 
                 Hazelcast.newHazelcastInstance(config);
             queueHazelcast.put(hazelcastInstance);
@@ -752,7 +752,7 @@ _footer: `Слайды: https://polarnik.github.io/grafana-comparator/`
 ```kotlin
     @Execution(ExecutionMode.SAME_THREAD)
     public class ALotOfLiteMember {
-        static LinkedBlockingQueue<HazelcastInstance> queueHazelcast = 
+        static LinkedBlockingQueue<HazelcastInstance> queueHz = 
             new LinkedBlockingQueue<>();
 ```
 ```java
@@ -762,7 +762,7 @@ _footer: `Слайды: https://polarnik.github.io/grafana-comparator/`
 ```
 ```kotlin
             throws InterruptedException {
-            var config = new LiteMemberConfigBuilder().buildConfig();
+            var config = new ConfigBuilder().buildConfig();
             var hazelcastInstance = 
                 Hazelcast.newHazelcastInstance(config);    
             queueHazelcast.put(hazelcastInstance);

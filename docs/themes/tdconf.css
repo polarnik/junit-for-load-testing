@@ -182,9 +182,14 @@ section.main {
 }
 
 pre {
-    margin: 0%;
+    margin: 0% !important;
+}
+
+img.emoji{
+    margin: 0 0.1em 0 0.1em !important;
 }
 
 pre code.language-kotlin span {
     opacity: 0.5 !important;
 }
+
